@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<object th:include="fragments/header :: scripts" th:remove="tag"></object>
+</head>
+<body>
+	<nav th:replace="fragments/adminheader :: navbar"></nav>
+	<div class="container">
+		<div class="row">
+			<div class="span8">
+				<fieldset>
+					<legend>User Details</legend>
+					<div class="table-responsive" th:if="${users != null}">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>User Id</th>
+									<th>Mac Address</th>
+								</tr>
+							</thead>
+							<tbody id="tableBody">
+								<tr th:each="user:${users}">
+									<td class="itemId" th:text="${user.id}"></td>
+									<td th:text="${user.macAddress}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-md-4 text-center" th:if="${users == null}">
+						<h3>No user registered!</h3>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

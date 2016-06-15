@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<object th:include="fragments/header :: scripts" th:remove="tag"></object>
+</head>
+<body>
+	<nav th:replace="fragments/adminheader :: navbar"></nav>
+	<div class="container">
+		<div class="row">
+			<div class="span8">
+				<fieldset>
+					<legend>Admin Page</legend>
+					<p>Admin Dahsboard</p>
+					<form class="form-horizontal" id="createUser" action="/admin/userdetails">
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-10" >
+									<div class="col-sm-2" style="margin-left: -12px;">
+										<button type="submit" class="btn btn-default">User Details</button>
+									</div>
+								</div>
+							</div>
+						</form>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
