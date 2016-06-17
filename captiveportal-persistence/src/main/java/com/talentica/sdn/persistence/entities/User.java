@@ -23,6 +23,9 @@ public class User extends AbstractAuditableEntity {
 	@Column(unique = true)
 	private String macAddress;
 	
+	@NotNull
+	private String ipAddress;
+	
 	private boolean activated;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -53,9 +56,17 @@ public class User extends AbstractAuditableEntity {
 		this.activated = activated;
 	}
 
-	@Override
-	public String toString() {
-		return "User [macAddress=" + macAddress + ", activated=" + activated + ", userRole=" + userRole + "]";
+	public String getIpAddress() {
+		return ipAddress;
 	}
 
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	@Override
+	public String toString() {
+		return "User [macAddress=" + macAddress + ", ipAddress=" + ipAddress + ", activated=" + activated
+				+ ", userRole=" + userRole + "]";
+	}
 }

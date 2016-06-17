@@ -42,4 +42,14 @@ public class UserServiceImpl implements UserService{
 		return userRepo.findRegisteredMacs();
 	}
 
+	@Override
+	public User findUserByIpAddress(String ipAddress) {
+		return userRepo.findByIpAddress(ipAddress);
+	}
+
+	@Override
+	public void setUserActivatedByMac(String mac) {
+		userRepo.setUserActivatedByMac(mac);
+	}
+
 }

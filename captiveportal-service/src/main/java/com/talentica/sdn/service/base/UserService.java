@@ -19,4 +19,6 @@ public interface UserService {
 	public List<User> findUserDetails();
 	public User findUserByMacAddress(String macAddress);
 	List<String> findRegisteredMacs();
+	public User findUserByIpAddress(String ipAddress);
+	public void setUserActivatedByMac(String mac);
 }

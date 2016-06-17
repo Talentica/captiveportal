@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,10 +52,11 @@ public class DataController {
 	private UserRoleService userRoleService;
 
 	@RequestMapping(value = "/createUser", method = RequestMethod.POST)
-	public ModelAndView createUser(@RequestParam String macAddress) {
+	public ModelAndView createUser(@RequestParam String macAddress, @RequestParam String ipAddress) {
 		ModelAndView model = new ModelAndView();
 		User user = new User();
 		user.setMacAddress(macAddress);
+		user.setIpAddress(ipAddress);
 		user.setUserRole(userRoleService.findUserRole("user"));
 		user.setActivated(true);
 		user.setCreatedDate(new DateTime());
@@ -78,11 +80,33 @@ public class DataController {
 		return response;
 	}
 
-	@RequestMapping(value = "/newUser", method = RequestMethod.GET)
-	public @ResponseBody Response addUser(String srcMac) {
+	/*@RequestMapping(value = "/newUser", method = RequestMethod.POST)
+	public @ResponseBody Response addUserPost(@RequestParam String srcIp, @RequestParam String srcMac) {
 		Response response = new Response();
 		User user = new User();
 		user.setMacAddress(srcMac);
+		user.setIpAddress(srcIp);
+		user.setUserRole(userRoleService.findUserRole("user"));
+		user.setActivated(false);
+		user.setCreatedDate(new DateTime());
+		user.setLastModifiedDate(new DateTime());
+		User savedUser = userService.createUser(user);
+		if (savedUser != null) {
+			response.setExist(true);
+			response.setMacAddress(savedUser.getMacAddress());
+		} else {
+			response.setExist(false);
+			response.setMacAddress(null);
+		}
+		return response;
+	}*/
+	
+	@RequestMapping(value = "/newUser", method = RequestMethod.GET)
+	public @ResponseBody Response addUser(@RequestParam String srcIp, @RequestParam String srcMac) {
+		Response response = new Response();
+		User user = new User();
+		user.setMacAddress(srcMac);
+		user.setIpAddress(srcIp);
 		user.setUserRole(userRoleService.findUserRole("user"));
 		user.setActivated(false);
 		user.setCreatedDate(new DateTime());
@@ -198,28 +222,36 @@ public class DataController {
 		return null;
 	}
 	
-	@RequestMapping(value = "/us", method = RequestMethod.GET)
-	private ModelAndView isRequestValid() {
+	@RequestMapping(value = "/check", method = RequestMethod.GET)
+	private ModelAndView isRequestValid(HttpServletRequest request, HttpServletResponse res) {
 		ModelAndView model = new ModelAndView();
+		String ipAddress = request.getHeader("X-FORWARDED-FOR");
+		System.out.println("****\n***\n***"+ipAddress);
+		User user = userService.findUserByIpAddress(ipAddress);
+		String mac = user.getMacAddress();
 		try {
 			URL url = new URL("http://localhost:8181/restconf/operations/hello:hello-world");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
+			String username = "admin";
+			String password = "admin";
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
-			String input = "{\"name\":\"naren\"}";
+			String authString = username + ":" + password;
+	        String authStringEnc = new String(Base64.encodeBase64(authString.getBytes()));
+	        conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			String input = "{\"input\": {\n\"mac\": "+mac+",\n\"ipAddress\": "+ipAddress+"\n}\n}";
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());
 			os.flush();
-
-			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-			}
 			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 			String output;
 			System.out.println("Output from Server .... \n");
 			while ((output = br.readLine()) != null) {
 				System.out.println(output);
+				if(output.contains("true")){
+					userService.setUserActivatedByMac(mac);
+				}
 			}
 			conn.disconnect();
 		} catch (MalformedURLException e) {
@@ -227,6 +259,15 @@ public class DataController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		model.setViewName("termsConditions");
+		return model;
+	}
+	
+	@RequestMapping("/us")
+	public ModelAndView showAdminPage() {
+		ModelAndView model = new ModelAndView();
+		String mac = "00:00:00:00:00:03";
+		userService.setUserActivatedByMac(mac);
 		model.setViewName("termsConditions");
 		return model;
 	}
