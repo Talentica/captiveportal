@@ -35,5 +35,7 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	@Modifying
 	@Query("update User u set u.activated = 1 where u.macAddress = ?1")
 	public void setUserActivatedByMac(String mac);
+
+	public List<User> findByIpAddressAndActivated(String ipAddress, boolean activated);
 	
 }

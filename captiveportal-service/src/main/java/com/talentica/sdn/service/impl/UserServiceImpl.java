@@ -52,4 +52,9 @@ public class UserServiceImpl implements UserService{
 		userRepo.setUserActivatedByMac(mac);
 	}
 
+	@Override
+	public List<User> findUserByIpAddressAndActivated(String ipAddress, boolean activated) {
+		return userRepo.findByIpAddressAndActivated(ipAddress, activated);
+	}
+
 }

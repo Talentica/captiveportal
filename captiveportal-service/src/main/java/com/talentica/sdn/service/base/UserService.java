@@ -21,4 +21,5 @@ public interface UserService {
 	List<String> findRegisteredMacs();
 	public User findUserByIpAddress(String ipAddress);
 	public void setUserActivatedByMac(String mac);
+	public List<User> findUserByIpAddressAndActivated(String ipAddress, boolean activated);
 }

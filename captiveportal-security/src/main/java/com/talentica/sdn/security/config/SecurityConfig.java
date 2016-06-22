@@ -21,13 +21,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/", "/active", "/health", "/newUser","/termsConditions", "/aboutus", "/getMac", "/users", "/check").permitAll()
+                .antMatchers("/", "/active", "/health", "/newUser","/termsConditions", "/aboutus").permitAll()
                 .antMatchers("/admin/**").access("hasRole('ADMIN')")
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/success")
+                .defaultSuccessUrl("/captiveportal")
                 .permitAll()
                 .and()
             .logout()

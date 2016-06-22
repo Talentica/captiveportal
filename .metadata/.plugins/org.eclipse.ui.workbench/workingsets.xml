@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workingSetManager>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1466594622305_1" label="captiveportal" name="captiveportal">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/captiveportal-web" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/captiveportal-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/captiveportal-persistence" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/captiveportal-security" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/captiveportal-common" type="4"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1466594553920_0" label="Window Working Set" name="Aggregate for window 1466594553920"/>
+</workingSetManager>

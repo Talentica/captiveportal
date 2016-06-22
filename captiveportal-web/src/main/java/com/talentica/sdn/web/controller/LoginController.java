@@ -37,25 +37,18 @@ public class LoginController {
 		return model;
 	}
 	
-	@RequestMapping("/success")
-	public ModelAndView showHomePage() {
+	@RequestMapping("/captiveportal")
+	public ModelAndView showHome() {
 		Authentication user = SecurityContextHolder.getContext()
 				.getAuthentication();
 		boolean isAdmin = user.getAuthorities().iterator().next()
 				.getAuthority().equalsIgnoreCase("ROLE_ADMIN");
 		ModelAndView model;
 		if (isAdmin)
-			model = new ModelAndView("redirect:/admin");
+			model = new ModelAndView("admin");
 		else
-			model = new ModelAndView("redirect:/home");
+			model = new ModelAndView("home");
 		model.addObject("isAdmin", isAdmin);
-		return model;
-	}
-	
-	@RequestMapping("/admin")
-	public ModelAndView showAdminPage() {
-		ModelAndView model = new ModelAndView();
-		model.setViewName("admin");
 		return model;
 	}
 }

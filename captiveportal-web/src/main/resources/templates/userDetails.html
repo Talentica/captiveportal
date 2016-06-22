@@ -18,12 +18,16 @@
 								<tr>
 									<th>User Id</th>
 									<th>Mac Address</th>
+									<th>IP Address</th>
+									<th>Activated</th>
 								</tr>
 							</thead>
 							<tbody id="tableBody">
 								<tr th:each="user:${users}">
 									<td class="itemId" th:text="${user.id}"></td>
 									<td th:text="${user.macAddress}"></td>
+									<td th:text="${user.ipAddress}"></td>
+									<td th:text="${user.activated}"></td>
 								</tr>
 							</tbody>
 						</table>
