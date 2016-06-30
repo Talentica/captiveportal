@@ -101,12 +101,12 @@ public class DataController {
 		if (ipAddress == null) {
 			ipAddress = request.getRemoteAddr();
 		}
-		System.out.println("****\n***\n***"+ipAddress);
+		System.out.println("**** "+ipAddress);
 		List<User> users = userService.findUserByIpAddressAndActivated(ipAddress, activated);
 		for(User user : users){
 			String mac = user.getMacAddress();
 			try {
-				URL url = new URL("http://localhost:8181/restconf/operations/hello:hello-world");
+				URL url = new URL("http://localhost:8181/restconf/operations/connect:connection");
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setDoOutput(true);
 				String username = "admin";
@@ -122,9 +122,7 @@ public class DataController {
 				os.flush();
 				BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 				String output;
-				System.out.println("Output from Server .... \n");
 				while ((output = br.readLine()) != null) {
-					System.out.println(output);
 					if(output.contains("true")){
 						userService.setUserActivatedByMac(mac);
 					}
