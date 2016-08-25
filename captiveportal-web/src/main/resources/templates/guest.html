@@ -2,25 +2,22 @@
 <html lang="en">
 <head>
 <title>New User</title>
-<object th:include="fragments/header :: scripts" th:remove="tag"></object>
+<object th:include="fragments/guestHeader :: scripts" th:remove="tag"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script type="text/javascript">
 	$(document).ready(function() {
 
 		// Validation
-		$("#createUser").validate({
+		$("#connect").validate({
 			rules : {
-				macAddress : {
-					required : true
-				},
-				ipAddress : {
-					required : true
+				terms : {
+					required : true,
+
 				}
 			},
 
 			messages : {
-				macAddress : "Please Enter the mac address.",
-				ipAddress : "Please Enter the IP address."
+				terms : "Accept Term and Conditions."
 			},
 
 			errorClass : "help-inline",
@@ -44,33 +41,27 @@
 </script>
 </head>
 <body>
-	<nav th:replace="fragments/adminheader :: navbar"></nav>
+	<nav th:replace="fragments/guestHeader :: navbar"></nav>
 	<div class="container">
 		<div class="row">
 			<div class="span8">
 				<fieldset>
-					<legend>User management</legend>
-					<form class="form-horizontal" id="createUser" action="/admin/createUser" method='post'>
-
-
+					<legend>Connect</legend>
+					<form class="form-horizontal" id="connect" action="/connect">
 						<div class="form-group">
-							<label class="control-label col-sm-2">Mac Address</label>
-							<div class="col-sm-3">
-								<input type="text" class="input-xlarge form-control"
-									id="macAddress" name="macAddress" maxlength="17"/>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-sm-2">IP Address</label>
-							<div class="col-sm-3">
-								<input type="text" class="input-xlarge form-control"
-									id="ipAddress" name="ipAddress" maxlength="17"/>
+							<div class="col-sm-offset-2 col-sm-4">
+							<p>Importat instructions for a guest user here!!!</p>
+								<label for="terms" class="input-group form-control"> <input
+									type="checkbox" id="terms" name="terms" value="accepted"></input>
+									I Accept the <a href="/termsConditions">Terms and
+										Conditions.</a>
+								</label>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
 								<div class="col-sm-2" style="margin-left: -12px;">
-									<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Add User</button>
+									<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Connect</button>
 								</div>
 							</div>
 						</div>

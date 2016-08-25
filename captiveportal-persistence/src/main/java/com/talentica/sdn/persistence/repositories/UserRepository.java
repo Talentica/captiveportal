@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.talentica.sdn.persistence.entities.User;
+import com.talentica.sdn.persistence.entities.UserRole;
 
 /**
  * @author NarenderK
@@ -37,5 +38,9 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	public void setUserActivatedByMac(String mac);
 
 	public List<User> findByIpAddressAndActivated(String ipAddress, boolean activated);
+	
+	@Modifying
+	@Query("update User u set u.userRole = ?1 where u.macAddress = ?2")
+	public void setUserRoleByMac(UserRole userRole, String mac);
 	
 }

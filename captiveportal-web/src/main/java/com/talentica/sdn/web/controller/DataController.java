@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.talentica.sdn.persistence.entities.User;
+import com.talentica.sdn.persistence.entities.UserRole;
 import com.talentica.sdn.service.base.UserRoleService;
 import com.talentica.sdn.service.base.UserService;
 import com.talentica.sdn.web.util.Response;
@@ -71,7 +74,7 @@ public class DataController {
 		User user = new User();
 		user.setMacAddress(srcMac);
 		user.setIpAddress(srcIp);
-		user.setUserRole(userRoleService.findUserRole("user"));
+		user.setUserRole(userRoleService.findUserRole("guest"));
 		user.setActivated(false);
 		user.setCreatedDate(new DateTime());
 		user.setLastModifiedDate(new DateTime());
@@ -84,6 +87,16 @@ public class DataController {
 			response.setMacAddress(null);
 		}
 		return response;
+	}
+	
+	@RequestMapping(value = "/getRole", method = RequestMethod.GET)
+	public @ResponseBody String getRole(@RequestParam String srcMac) {
+		User user = userService.findUserByMacAddress(srcMac);
+		if(user == null){
+			return "GUEST";
+		}
+		String role = user.getUserRole().getRole();
+		return role;
 	}
 
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -101,10 +114,9 @@ public class DataController {
 		if (ipAddress == null) {
 			ipAddress = request.getRemoteAddr();
 		}
-		System.out.println("**** "+ipAddress);
 		List<User> users = userService.findUserByIpAddressAndActivated(ipAddress, activated);
-		for(User user : users){
-			String mac = user.getMacAddress();
+		for(User userToValidate : users){
+			String mac = userToValidate.getMacAddress();
 			try {
 				URL url = new URL("http://localhost:8181/restconf/operations/connect:connection");
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -124,6 +136,11 @@ public class DataController {
 				String output;
 				while ((output = br.readLine()) != null) {
 					if(output.contains("true")){
+						Authentication user = SecurityContextHolder.getContext().getAuthentication();
+						boolean isEmployee = user.getAuthorities().iterator().next().getAuthority().equalsIgnoreCase("ROLE_USER");
+						if(isEmployee){
+							userService.setUserRoleByMac(userRoleService.findUserRole("user"), mac);
+						}
 						userService.setUserActivatedByMac(mac);
 					}
 				}

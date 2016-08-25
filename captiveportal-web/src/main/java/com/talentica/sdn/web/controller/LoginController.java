@@ -28,10 +28,10 @@ public class LoginController {
 			HttpServletRequest request) {
 		ModelAndView model = new ModelAndView();
 		if (logout != null) {
-			model.addObject("msg", "You've been logged out successfully.");
+			model.addObject("msg", "logged out successfully.");
 		}
 		if (error != null) {
-			model.addObject("error", "You've entered wrong username or password.");
+			model.addObject("error", "wrong username or password.");
 		}
 		model.setViewName("login");
 		return model;
@@ -39,16 +39,22 @@ public class LoginController {
 	
 	@RequestMapping("/captiveportal")
 	public ModelAndView showHome() {
-		Authentication user = SecurityContextHolder.getContext()
-				.getAuthentication();
-		boolean isAdmin = user.getAuthorities().iterator().next()
-				.getAuthority().equalsIgnoreCase("ROLE_ADMIN");
+		Authentication user = SecurityContextHolder.getContext().getAuthentication();
+		boolean isAdmin = user.getAuthorities().iterator().next().getAuthority().equalsIgnoreCase("ROLE_ADMIN");
+		boolean isGuest = user.getAuthorities().iterator().next().getAuthority().equalsIgnoreCase("ROLE_GUEST");
 		ModelAndView model;
-		if (isAdmin)
+		if (isAdmin){
 			model = new ModelAndView("admin");
-		else
+		}
+		else if (isGuest){
+			model = new ModelAndView("guest");
+		}
+		else{
 			model = new ModelAndView("home");
+		}
 		model.addObject("isAdmin", isAdmin);
+		model.addObject("isGuest", isGuest);
 		return model;
 	}
+	
 }

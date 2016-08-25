@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.talentica.sdn.persistence.entities.User;
+import com.talentica.sdn.persistence.entities.UserRole;
 import com.talentica.sdn.persistence.repositories.UserRepository;
 import com.talentica.sdn.service.base.UserService;
 
@@ -55,6 +56,12 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public List<User> findUserByIpAddressAndActivated(String ipAddress, boolean activated) {
 		return userRepo.findByIpAddressAndActivated(ipAddress, activated);
+	}
+
+	@Override
+	public void setUserRoleByMac(UserRole userRole, String mac) {
+		userRepo.setUserRoleByMac(userRole, mac);
+		
 	}
 
 }
