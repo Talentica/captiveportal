@@ -56,7 +56,6 @@
 	<nav th:replace="fragments/header :: navbar"></nav>
 	<div class="container">
 		<div class="card card-container">
-		<img id="profile-img" src="/img/avatar_2x.png" class="profile-img-card"></img>
             <p id="profile-name" class="profile-name-card"></p>
 				<form class="form-signin" id="login" method='post' action="/login">
 					<fieldset>
@@ -70,14 +69,9 @@
 							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 							<strong th:text="${msg}"></strong>
 						</div>
-
-
 					<input type="text" id="username" name="username" class="form-control" placeholder="username"/>
-
 					<input type="password" id="password" name="password" class="form-control" placeholder="Password"/>
-						
 					<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Sign in</button>
-
 				</fieldset>
 				</form>
 		</div>
