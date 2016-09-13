@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>New User</title>
+<object th:include="fragments/header :: scripts" th:remove="tag"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		// Validation
+		$("#createUser").validate({
+			rules : {
+				macAddress : {
+					required : true
+				},
+				ipAddress : {
+					required : true
+				}
+			},
+
+			messages : {
+				macAddress : "Please Enter the mac address.",
+				ipAddress : "Please Enter the IP address."
+			},
+
+			errorClass : "help-inline",
+			errorElement : "span",
+			highlight : function(element, errorClass, validClass) {
+				$(element).parents('.form-group').addClass('has-error');
+			},
+			unhighlight : function(element, errorClass, validClass) {
+				$(element).parents('.form-group').removeClass('has-error');
+				$(element).parents('.form-group').addClass('has-success');
+			},
+			errorPlacement : function(error, element) {
+				if (element.parent('.input-group').length) {
+					error.insertAfter(element.parent());
+				} else {
+					error.insertAfter(element);
+				}
+			}
+		});
+	});
+	
+    $(function(){
+		$('.normal').autosize();
+		$('.animated').autosize({append: "\n"});
+	});
+</script>
+</head>
+<body>
+	<nav th:replace="fragments/adminheader :: navbar"></nav>
+	<div class="container">
+		<div class="row">
+			<div class="span8">
+				<fieldset>
+					<legend>Flow management</legend>
+					<form class="form-horizontal" id="createUser" action="/admin/updateFlow" method='post'>
+						
+						<div class="alert alert-danger"
+							th:if="${error!=null}">
+							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							<strong th:text="${error}"></strong>
+						</div>
+						
+						<div class="alert alert-success"
+							th:if="${msg!=null}">
+							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							<strong th:text="${msg}"></strong>
+						</div>
+
+
+						<div class="form-group">
+							<label class="control-label col-sm-2">DPID</label>
+							<div class="col-sm-3">
+								<input type="text" class="input-xlarge form-control"
+									id="dpid" name="dpid" placeholder="Switch Id"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-2">Flow ID</label>
+							<div class="col-sm-3">
+								<input type="text" class="input-xlarge form-control"
+									id="flowId" name="flowId" placeholder="Unique Flow Id"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-2">Flow Body</label>
+							<div class="col-sm-3">
+							<textarea class="form-control animated" id="input" name="input" placeholder="Flow Input"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<div class="col-sm-2" style="margin-left: -12px;">
+									<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Update Flow</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

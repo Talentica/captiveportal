@@ -8,17 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.talentica.sdn.persistence.entities.User;
-import com.talentica.sdn.persistence.entities.UserRole;
 import com.talentica.sdn.service.base.UserRoleService;
 import com.talentica.sdn.service.base.UserService;
 import com.talentica.sdn.web.util.Response;
@@ -155,6 +147,13 @@ public class DataController {
 		return model;
 	}
 	
+	@RequestMapping("/admin/flow")
+	public ModelAndView flow() {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("flow");
+		return model;
+	}
+	
 	@RequestMapping("/admin/userdetails")
 	public ModelAndView showUserDetails(HttpServletRequest request, HttpServletResponse res) {
 		List<User> users = userService.findUserDetails();
@@ -184,6 +183,47 @@ public class DataController {
 		}
 		model.addObject("users", users);
 		model.setViewName("userDetails");
+		return model;
+	}
+	
+	@RequestMapping(value = "/admin/updateFlow", method = RequestMethod.POST)
+	public ModelAndView updateFlow(@RequestParam String dpid, @RequestParam String flowId, @RequestParam String input){
+		Integer code = 0;
+		ModelAndView model = new ModelAndView();
+		String path = "http://localhost:8181/restconf/config/opendaylight-inventory:nodes/node/";
+		String dpidPath = path + dpid + "/";
+		String pathToFlow = dpidPath + "table/0/flow/" + flowId;
+		try {
+			URL url = new URL(pathToFlow);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			String username = "admin";
+			String password = "admin";
+			conn.setRequestMethod("PUT");
+			conn.setRequestProperty("Content-Type", "application/xml");
+			String authString = username + ":" + password;
+	        String authStringEnc = new String(Base64.encodeBase64(authString.getBytes()));
+	        conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			OutputStream os = conn.getOutputStream();
+			os.write(input.getBytes());
+			os.flush();
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			code = conn.getResponseCode();
+			//System.out.println(code);
+			conn.disconnect();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(code==200){
+			model.addObject("msg", "Flow updated successfully!");
+		}else{
+			model.addObject("error", "Error!! HTTP response code : "+code);
+		}
+		model.setViewName("flow");
 		return model;
 	}
 }

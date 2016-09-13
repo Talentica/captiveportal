@@ -9,6 +9,12 @@ body, html {
     padding: 40px 40px;
 }
 
+.animated {
+    -webkit-transition: height 0.2s;
+	-moz-transition: height 0.2s;
+	transition: height 0.2s;
+}
+
 .btn {
     font-weight: 700;
     height: 36px;
