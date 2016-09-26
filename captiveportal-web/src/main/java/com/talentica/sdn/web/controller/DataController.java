@@ -4,13 +4,10 @@
 package com.talentica.sdn.web.controller;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.talentica.sdn.common.util.Constants;
 import com.talentica.sdn.persistence.entities.User;
 import com.talentica.sdn.service.base.UserRoleService;
 import com.talentica.sdn.service.base.UserService;
-import com.talentica.sdn.web.util.Response;
 
 /**
  * @author NarenderK
@@ -45,24 +42,30 @@ public class DataController {
 
 	@Autowired
 	private UserRoleService userRoleService;
-
+	
+	/**
+	 * 
+	 * @param srcMac
+	 * @return
+	 */
 	@RequestMapping(value = "/active", method = RequestMethod.GET)
-	public @ResponseBody Response isMacRegistered(String srcMac) {
-		Response response = new Response();
+	public @ResponseBody String isMacRegistered(String srcMac) {
 		User user = userService.findUserByMacAddress(srcMac);
 		if (user != null && user.isActivated()) {
-			response.setExist(true);
-			response.setMacAddress(user.getMacAddress());
+			return user.getMacAddress();
 		} else {
-			response.setExist(false);
-			response.setMacAddress(null);
+			return null;
 		}
-		return response;
 	}
-
+	
+	/**
+	 * 
+	 * @param srcIp
+	 * @param srcMac
+	 * @return
+	 */
 	@RequestMapping(value = "/newUser", method = RequestMethod.GET)
-	public @ResponseBody Response addUser(@RequestParam String srcIp, @RequestParam String srcMac) {
-		Response response = new Response();
+	public @ResponseBody String addUser(@RequestParam String srcIp, @RequestParam String srcMac) {
 		User user = new User();
 		user.setMacAddress(srcMac);
 		user.setIpAddress(srcIp);
@@ -72,34 +75,45 @@ public class DataController {
 		user.setLastModifiedDate(new DateTime());
 		User savedUser = userService.createUser(user);
 		if (savedUser != null) {
-			response.setExist(true);
-			response.setMacAddress(savedUser.getMacAddress());
+			return savedUser.getMacAddress();
 		} else {
-			response.setExist(false);
-			response.setMacAddress(null);
+			return null;
 		}
-		return response;
 	}
 	
+	/**
+	 * 
+	 * @param srcMac
+	 * @return
+	 */
 	@RequestMapping(value = "/getRole", method = RequestMethod.GET)
 	public @ResponseBody String getRole(@RequestParam String srcMac) {
 		User user = userService.findUserByMacAddress(srcMac);
 		if(user == null){
 			return "GUEST";
-		}
-		String role = user.getUserRole().getRole();
-		return role;
+		}		
+		return user.getUserRole().getRole();
 	}
-
+	
+	/**
+	 * 
+	 * @param srcMac
+	 * @return
+	 */
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public @ResponseBody List<String> getRegisteredMacs(String srcMac) {
-		List<String> users = new ArrayList<>();
-		users = userService.findRegisteredMacs();
-		return users;
+		return userService.findRegisteredMacs();
 	}
-
+	
+	/**
+	 * 
+	 * @param request
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/connect", method = RequestMethod.GET)
-	private ModelAndView isRequestValid(HttpServletRequest request, HttpServletResponse res) {
+	private ModelAndView isRequestValid(HttpServletRequest request, HttpServletResponse res) throws Exception {
 		ModelAndView model = new ModelAndView();
 		boolean activated = false;
 		String ipAddress = request.getHeader("X-FORWARDED-FOR");
@@ -113,8 +127,8 @@ public class DataController {
 				URL url = new URL("http://localhost:8181/restconf/operations/connect:connection");
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setDoOutput(true);
-				String username = "admin";
-				String password = "admin";
+				String username = Constants.ODL_USERNAME_ADMIN;
+				String password = Constants.ODL_PASSWORD_ADMIN;
 				conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Type", "application/json");
 				String authString = username + ":" + password;
@@ -124,7 +138,7 @@ public class DataController {
 				OutputStream os = conn.getOutputStream();
 				os.write(input.getBytes());
 				os.flush();
-				BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				String output;
 				while ((output = br.readLine()) != null) {
 					if(output.contains("true")){
@@ -137,16 +151,18 @@ public class DataController {
 					}
 				}
 				conn.disconnect();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				throw e;
 			}
 		}
 		model.setViewName("welcome");
 		return model;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/admin/flow")
 	public ModelAndView flow() {
 		ModelAndView model = new ModelAndView();
@@ -154,6 +170,12 @@ public class DataController {
 		return model;
 	}
 	
+	/**
+	 * 
+	 * @param request
+	 * @param res
+	 * @return
+	 */
 	@RequestMapping("/admin/userdetails")
 	public ModelAndView showUserDetails(HttpServletRequest request, HttpServletResponse res) {
 		List<User> users = userService.findUserDetails();
@@ -166,6 +188,12 @@ public class DataController {
 		return model;
 	}
 	
+	/**
+	 * 
+	 * @param macAddress
+	 * @param ipAddress
+	 * @return
+	 */
 	@RequestMapping(value = "/admin/createUser", method = RequestMethod.POST)
 	public ModelAndView createUser(@RequestParam String macAddress, @RequestParam String ipAddress) {
 		ModelAndView model = new ModelAndView();
@@ -186,8 +214,16 @@ public class DataController {
 		return model;
 	}
 	
+	/**
+	 * 
+	 * @param dpid
+	 * @param flowId
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/admin/updateFlow", method = RequestMethod.POST)
-	public ModelAndView updateFlow(@RequestParam String dpid, @RequestParam String flowId, @RequestParam String input){
+	public ModelAndView updateFlow(@RequestParam String dpid, @RequestParam String flowId, @RequestParam String input) throws Exception{
 		Integer code = 0;
 		ModelAndView model = new ModelAndView();
 		String path = "http://localhost:8181/restconf/config/opendaylight-inventory:nodes/node/";
@@ -197,8 +233,8 @@ public class DataController {
 			URL url = new URL(pathToFlow);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
-			String username = "admin";
-			String password = "admin";
+			String username = Constants.ODL_USERNAME_ADMIN;
+			String password = Constants.ODL_PASSWORD_ADMIN;
 			conn.setRequestMethod("PUT");
 			conn.setRequestProperty("Content-Type", "application/xml");
 			String authString = username + ":" + password;
@@ -207,16 +243,11 @@ public class DataController {
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());
 			os.flush();
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			code = conn.getResponseCode();
-			//System.out.println(code);
 			conn.disconnect();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw e;
 		}
 		if(code==200){
 			model.addObject("msg", "Flow updated successfully!");

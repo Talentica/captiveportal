@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.talentica.sdn.common.util.Constants;
+
 /**
  * @author NarenderK
  *
@@ -21,7 +23,14 @@ import org.springframework.web.servlet.ModelAndView;
 @Configuration
 @Controller
 public class LoginController {
-
+	
+	/**
+	 * 
+	 * @param error
+	 * @param logout
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView login(@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout,
@@ -37,11 +46,15 @@ public class LoginController {
 		return model;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	@RequestMapping("/captiveportal")
 	public ModelAndView showHome() {
 		Authentication user = SecurityContextHolder.getContext().getAuthentication();
-		boolean isAdmin = user.getAuthorities().iterator().next().getAuthority().equalsIgnoreCase("ROLE_ADMIN");
-		boolean isGuest = user.getAuthorities().iterator().next().getAuthority().equalsIgnoreCase("ROLE_GUEST");
+		boolean isAdmin = Constants.USER_ROLE_ADMIN.equalsIgnoreCase(user.getAuthorities().iterator().next().getAuthority());
+		boolean isGuest = Constants.USER_ROLE_GUEST.equalsIgnoreCase(user.getAuthorities().iterator().next().getAuthority());
 		ModelAndView model;
 		if (isAdmin){
 			model = new ModelAndView("admin");
