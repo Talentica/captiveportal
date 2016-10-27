@@ -43,4 +43,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	@Query("update User u set u.userRole = ?1 where u.macAddress = ?2")
 	public void setUserRoleByMac(UserRole userRole, String mac);
 	
+	public List<User> deleteById(long id);
+	
 }

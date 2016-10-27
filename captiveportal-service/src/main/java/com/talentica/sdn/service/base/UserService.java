@@ -24,4 +24,5 @@ public interface UserService {
 	public void setUserActivatedByMac(String mac);
 	public List<User> findUserByIpAddressAndActivated(String ipAddress, boolean activated);
 	public void setUserRoleByMac(UserRole userRole, String mac);
+	public List<User> deleteUser(long parseLong);
 }

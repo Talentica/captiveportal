@@ -19,15 +19,24 @@
 									<th>User Id</th>
 									<th>Mac Address</th>
 									<th>IP Address</th>
+									<th>Role</th>
 									<th>Activated</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody id="tableBody">
 								<tr th:each="user:${users}">
-									<td class="itemId" th:text="${user.id}"></td>
-									<td th:text="${user.macAddress}"></td>
-									<td th:text="${user.ipAddress}"></td>
-									<td th:text="${user.activated}"></td>
+									<form class="form-horizontal" id="deleteUser" action="/admin/deleteUser" method='post'>
+										<td class="itemId" th:text="${user.id}"></td>
+										<td th:text="${user.macAddress}"></td>
+										<td th:text="${user.ipAddress}"></td>
+										<td th:text="${user.userRole.role}"></td>
+										<td th:text="${user.activated}"></td>
+										<td>
+											<input type="hidden" th:value="${user.id}" id="userId" name="userId"></input>
+											<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Remove</button>
+										</td>
+									</form>
 								</tr>
 							</tbody>
 						</table>

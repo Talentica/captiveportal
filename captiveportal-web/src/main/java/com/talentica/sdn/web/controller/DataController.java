@@ -257,4 +257,23 @@ public class DataController {
 		model.setViewName("flow");
 		return model;
 	}
+	
+	/**
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping(value = "/admin/deleteUser", method = RequestMethod.POST)
+	public ModelAndView deleteUser(@RequestParam String userId) {
+		ModelAndView model = new ModelAndView();
+		
+		userService.deleteUser(Long.parseLong(userId));
+		List<User> users = userService.findUserDetails();
+		if (users != null) {
+			users = users.isEmpty() ? null : users;
+		}
+		model.addObject("users", users);
+		model.setViewName("userDetails");
+		return model;
+	}
 }
