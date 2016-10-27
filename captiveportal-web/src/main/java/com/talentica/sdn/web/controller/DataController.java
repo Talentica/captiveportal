@@ -172,6 +172,17 @@ public class DataController {
 	
 	/**
 	 * 
+	 * @return
+	 */
+	@RequestMapping("/admin/qos")
+	public ModelAndView qos() {
+		ModelAndView model = new ModelAndView();
+		model.setViewName("qos");
+		return model;
+	}
+	
+	/**
+	 * 
 	 * @param request
 	 * @param res
 	 * @return
@@ -250,7 +261,51 @@ public class DataController {
 			throw e;
 		}
 		if(code==200){
-			model.addObject("msg", "Flow updated successfully!");
+			model.addObject("msg", "Flow added or updated successfully!");
+		}else{
+			model.addObject("error", "Error!! HTTP response code : "+code);
+		}
+		model.setViewName("flow");
+		return model;
+	}
+	
+	/**
+	 * 
+	 * @param dpid
+	 * @param meterId
+	 * @param input
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/admin/updateMeter", method = RequestMethod.POST)
+	public ModelAndView updateMeter(@RequestParam String dpid, @RequestParam String meterId, @RequestParam String input) throws Exception{
+		Integer code = 0;
+		ModelAndView model = new ModelAndView();
+		String path = "http://localhost:8181/restconf/config/opendaylight-inventory:nodes/node/";
+		String dpidPath = path + dpid + "/";
+		String pathToFlow = dpidPath + "meter/" + meterId;
+		try {
+			URL url = new URL(pathToFlow);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			String username = Constants.ODL_USERNAME_ADMIN;
+			String password = Constants.ODL_PASSWORD_ADMIN;
+			conn.setRequestMethod("PUT");
+			conn.setRequestProperty("Content-Type", "application/xml");
+			String authString = username + ":" + password;
+	        String authStringEnc = new String(Base64.encodeBase64(authString.getBytes()));
+	        conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			OutputStream os = conn.getOutputStream();
+			os.write(input.getBytes());
+			os.flush();
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			code = conn.getResponseCode();
+			conn.disconnect();
+		} catch (Exception e) {
+			throw e;
+		}
+		if(code==200){
+			model.addObject("msg", "Meter added or updated successfully!");
 		}else{
 			model.addObject("error", "Error!! HTTP response code : "+code);
 		}

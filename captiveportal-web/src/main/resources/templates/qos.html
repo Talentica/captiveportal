@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Flows</title>
+<title>Meters</title>
 <object th:include="fragments/header :: scripts" th:remove="tag"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script type="text/javascript">
 	$(document).ready(function() {
 
 		// Validation
-		$("#createFlow").validate({
+		$("#createMeter").validate({
 			rules : {
 				dpid : {
 					required : true
 				},
-				flowId : {
+				meterId : {
 					required : true
 				},
 				input : {
@@ -23,8 +23,8 @@
 
 			messages : {
 				dpid : "Please Enter the dpid.",
-				flowId : "Please Enter the flowId.",
-				input : "Please Enter the flow data."
+				meterId : "Please Enter the meterId.",
+				input : "Please Enter the meter data."
 			},
 
 			errorClass : "help-inline",
@@ -58,8 +58,8 @@
 		<div class="row">
 			<div class="span8">
 				<fieldset>
-					<legend>Flow management</legend>
-					<form class="form-horizontal" id="createFlow" action="/admin/updateFlow" method='post'>
+					<legend>Meter management</legend>
+					<form class="form-horizontal" id="createMeter" action="/admin/updateMeter" method='post'>
 						
 						<div class="alert alert-danger"
 							th:if="${error!=null}">
@@ -82,22 +82,22 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-sm-2">Flow ID</label>
+							<label class="control-label col-sm-2">Meter ID</label>
 							<div class="col-sm-3">
 								<input type="text" class="input-xlarge form-control"
-									id="flowId" name="flowId" placeholder="Unique Flow Id"/>
+									id="meterId" name="meterId" placeholder="Unique meter Id"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-sm-2">Flow Body</label>
+							<label class="control-label col-sm-2">Meter Body</label>
 							<div class="col-sm-3">
-							<textarea class="form-control animated" id="input" name="input" placeholder="Flow Input"></textarea>
+							<textarea class="form-control animated" id="input" name="input" placeholder="Meter Input"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-10">
 								<div class="col-sm-2" style="margin-left: -12px;">
-									<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Update Flow</button>
+									<button type="submit" class="btn btn-lg btn-primary btn-block btn-signin">Update Meter</button>
 								</div>
 							</div>
 						</div>
