@@ -29,6 +29,7 @@ import com.talentica.sdn.common.util.Constants;
 import com.talentica.sdn.persistence.entities.User;
 import com.talentica.sdn.service.base.UserRoleService;
 import com.talentica.sdn.service.base.UserService;
+import com.talentica.sdn.web.to.UserTO;
 
 /**
  * @author NarenderK
@@ -86,13 +87,24 @@ public class DataController {
 	 * @param srcMac
 	 * @return
 	 */
-	@RequestMapping(value = "/getRole", method = RequestMethod.GET)
-	public @ResponseBody String getRole(@RequestParam String srcMac) {
+	@RequestMapping(value = "/getUserDetials", method = RequestMethod.GET)
+	public @ResponseBody UserTO getUserDetails(@RequestParam String srcMac) {
+		UserTO userTo = new UserTO();
 		User user = userService.findUserByMacAddress(srcMac);
-		if(user == null){
-			return "GUEST";
-		}		
-		return user.getUserRole().getRole();
+		if (user != null) {
+			userTo.setMacAddress(user.getMacAddress());
+			userTo.setIpAddress(user.getIpAddress());
+			userTo.setActivated(user.isActivated());
+			userTo.setUserRole(user.getUserRole().getRole());
+			userTo.setExist(true);
+		} else {
+			userTo.setMacAddress(null);
+			userTo.setIpAddress(null);
+			userTo.setActivated(false);
+			userTo.setUserRole(Constants.USER_ROLE_GUEST);
+			userTo.setExist(false);
+		}
+		return userTo;
 	}
 	
 	/**
